@@ -17,11 +17,14 @@ namespace LibraryApi.Controllers
         private readonly IMapper _mapper;
         private readonly MapperConfiguration _config;
 
-        public BooksController(LibraryDataContext context, IMapper mapper, MapperConfiguration config)
+        private readonly ILookupBooks _bookLookup;
+
+        public BooksController(LibraryDataContext context, IMapper mapper, MapperConfiguration config, ILookupBooks bookLookup)
         {
             _context = context;
             _mapper = mapper;
             _config = config;
+            _bookLookup = bookLookup;
         }
 
         // PUT /books/{id}/genre
@@ -87,10 +90,8 @@ namespace LibraryApi.Controllers
         [HttpGet("books/{id:int}", Name ="books#getbookbyid")]
         public async Task<ActionResult> GetBookById(int id)
         {
-            var response = await _context.GetBooksInInventory()
-                .ProjectTo<GetBookDetailsResponse>(_config)
-                .Where(b => b.Id == id)
-                .SingleOrDefaultAsync();
+          
+            GetBookDetailsResponse response = await _bookLookup.GetBookById(id);
 
             if(response == null)
             {

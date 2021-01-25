@@ -25,7 +25,8 @@ namespace LibraryApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddTransient<IFormatNames, InformalFormatters>();
+            
             var mapperConfiguration = new MapperConfiguration(c =>
             {
                 c.AddProfile(new BookProfile());
@@ -85,6 +86,7 @@ namespace LibraryApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+               
             });
         }
     }
