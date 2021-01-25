@@ -28,6 +28,12 @@ namespace LibraryApi
             services.AddTransient<IFormatNames, InformalFormatters>();
             services.AddScoped<ILookupBooks, EfSqlBooks>();
             services.AddScoped<IBookCommands, EfSqlBooks>();
+            services.AddTransient<ICatalog, RedisCatalog>();
+
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("redis");
+            });
             
             var mapperConfiguration = new MapperConfiguration(c =>
             {
