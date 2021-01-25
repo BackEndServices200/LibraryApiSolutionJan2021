@@ -26,6 +26,8 @@ namespace LibraryApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IFormatNames, InformalFormatters>();
+            services.AddScoped<ILookupBooks, EfSqlBooks>();
+            services.AddScoped<IBookCommands, EfSqlBooks>();
             
             var mapperConfiguration = new MapperConfiguration(c =>
             {

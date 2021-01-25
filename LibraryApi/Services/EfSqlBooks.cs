@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LibraryApi.Services
 {
-    public class EfSqlBooks : ILookupBooks
+    public class EfSqlBooks : ILookupBooks, IBookCommands
     {
         private LibraryDataContext _context;
         private IMapper _mapper;
@@ -30,6 +30,33 @@ namespace LibraryApi.Services
                 .Where(b => b.Id == id)
                 .SingleOrDefaultAsync();
             return response;
+        }
+
+        public async Task<GetBooksResponse> GetBooks(string genre)
+        {
+            var response = new GetBooksResponse();
+            var booksQuery = _context.GetBooksInInventory()
+                .ProjectTo<GetBooksResponseItem>(_config);
+
+            if (genre != "All")
+            {
+                booksQuery = booksQuery.Where(b => b.Genre == genre);
+            }
+            response.Data = await booksQuery.ToListAsync();
+            response.NumberOfBooks = response.Data.Count;
+            response.Genre = genre;
+            return response;
+        }
+
+        public async Task RemoveBookFromInventory(int id)
+        {
+            var storedBook = await _context.GetBooksInInventory().SingleOrDefaultAsync(b => b.Id == id);
+            if (storedBook != null)
+            {
+                storedBook.IsInInventory = false;
+                await _context.SaveChangesAsync();
+            }
+
         }
     }
 }
