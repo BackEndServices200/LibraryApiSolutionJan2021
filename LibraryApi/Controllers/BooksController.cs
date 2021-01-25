@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper.QueryableExtensions;
+using LibraryApi.Filters;
 
 namespace LibraryApi.Controllers
 {
@@ -54,16 +55,13 @@ namespace LibraryApi.Controllers
 
 
         [HttpPost("books")]
+        [ValidateModel]
         public async Task<ActionResult> AddBook([FromBody] PostBookRequest request)
         {
+           
             // 1. Do validation.
             //    - If it isn't valid, return a 400, perhaps with some information.
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState); // 400
-            }
-            else
-            {
+           
                 // 2. Change the domain (do the work)
                 //    - add the book to the database
                 // PostBookRequest -> Book
@@ -80,7 +78,7 @@ namespace LibraryApi.Controllers
                 var response = _mapper.Map<GetBookDetailsResponse>(bookToAdd);
                 return CreatedAtRoute("books#getbookbyid", new { id = response.Id }, response);
                
-            }
+            
         }
 
         [HttpGet("books/{id:int}", Name ="books#getbookbyid")]
@@ -89,13 +87,7 @@ namespace LibraryApi.Controllers
           
             GetBookDetailsResponse response = await _bookLookup.GetBookById(id);
 
-            if(response == null)
-            {
-                return NotFound();
-            } else
-            {
-                return Ok(response);
-            }
+            return this.Maybe(response);
         }
 
         [HttpGet("books")]
