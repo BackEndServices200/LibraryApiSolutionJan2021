@@ -25,7 +25,7 @@ Content-Type: application/json
     "id": 42,
     "for": "John Doe",
     "books": [1,2,3,4],
-    "status": "Pending" | "Approved" | "Denied"
+    "status": "Pending"
 }
 ```
 

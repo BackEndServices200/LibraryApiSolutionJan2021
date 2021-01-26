@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RabbitMqUtils;
 using System.Text.Json.Serialization;
 
 namespace LibraryApi
@@ -45,6 +46,9 @@ namespace LibraryApi
             IMapper mapper = mapperConfiguration.CreateMapper();
             services.AddSingleton<IMapper>(mapper);
             services.AddSingleton<MapperConfiguration>(mapperConfiguration);
+
+            services.AddRabbit(Configuration);
+            services.AddScoped<IProcessReservation, RabbitMqReservationProcessor>();
 
             services.AddDbContext<LibraryDataContext>(cfg =>
             {
