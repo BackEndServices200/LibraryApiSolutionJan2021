@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using System.Text.Json.Serialization;
 
 namespace LibraryApi
 {
@@ -39,6 +39,7 @@ namespace LibraryApi
             {
                 c.AddProfile(new BookProfile());
                 // add additional profiles here...
+                c.AddProfile(new ReservationProfile());
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();
@@ -55,7 +56,13 @@ namespace LibraryApi
             services.AddScoped<IGetServerStatus, DrashtiServerStatus>();
             // AddSingleton - create one instance, and share it with everyone. NOTE: Must be thread safe.
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.IgnoreNullValues = true;
+
+                });
 
             services.AddSwaggerGen(config =>
             {
