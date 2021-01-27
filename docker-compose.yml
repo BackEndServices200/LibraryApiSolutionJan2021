@@ -1,14 +1,39 @@
 version: "3.7"
 services:
   api:
-    image: jeffrygonzalez/few100api:latest
+    image: jeffrygonzalez/libraryapi:jan2021
     depends_on:
       - sql
     ports: 
       - 80:80
     environment: 
-      - ConnectionStrings__library=server=sql;database=library_docker;user id=sa;password=TokyoJoe138!
+      - ConnectionStrings__library=server=sql;database=library;user id=sa;password=TokyoJoe138!
+      - ConnectionStrings__redis=redis
+      - Rabbit:HostName=rabbit
+      - Rabbit:UserName=guest
+      - Rabbit:Password=guest
+      - Rabbit:Port=5672
+      - Rabbit:VHost=/
   sql:
-    image: jeffrygonzalez/sql-few100-jan-2021:latest
+    image: jeffrygonzalez/sqlbase:jan-2021-bes200
     ports:
       - 1433:1433
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+  rabbit:
+    image: rabbitmq:3-management
+    ports: 
+      - 15671:15671
+      - 15672:15672
+      - 5672:5672
+  processor:
+    image: jeffrygonzalez/libraryreservations:jan2021
+    environment: 
+      - apiUrl=http://api:1337
+      - Rabbit:HostName=rabbit
+      - Rabbit:UserName=guest
+      - Rabbit:Password=guest
+      - Rabbit:Port=5672
+      - Rabbit:VHost=/

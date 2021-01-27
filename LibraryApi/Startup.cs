@@ -1,5 +1,6 @@
 using AutoMapper;
 using LibraryApi.Domain;
+using LibraryApi.Models.Options;
 using LibraryApi.Profiles;
 using LibraryApi.Services;
 using Microsoft.AspNetCore.Builder;
@@ -26,6 +27,13 @@ namespace LibraryApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var configForMessages = new MessagesOptions();
+            
+            services.Configure<MessagesOptions>(
+                Configuration.GetSection(configForMessages.SectionName)
+             );
+
             services.AddTransient<IFormatNames, InformalFormatters>();
             services.AddScoped<ILookupBooks, EfSqlBooks>();
             services.AddScoped<IBookCommands, EfSqlBooks>();
