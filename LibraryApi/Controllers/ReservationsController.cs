@@ -42,9 +42,11 @@ namespace LibraryApi.Controllers
             // Tell something else - somehow - to work on this outside the Request/Response cycle.
 
             reservation.Status = ReservationStatus.Pending;
-            await _reservationProcessor.ProcessReservation(reservation);
+            // the reservation has an Id of zero because it hasn't been saved yet.
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
+            // like "magic" it now has a non-zero id (it's database id)
+            await _reservationProcessor.ProcessReservation(reservation);
 
             var response = _mapper.Map<GetReservationDetailsResponse>(reservation);
 
@@ -82,7 +84,7 @@ namespace LibraryApi.Controllers
         }
 
         // When a BW Rejects a reservation
-        [HttpPost("/reservation/rejected")]
+        [HttpPost("/reservations/rejected")]
         public async Task<ActionResult> ReservationRejected([FromBody] GetReservationDetailsResponse request)
         {
             var reservation = await _context.Reservations
